@@ -14,12 +14,8 @@ services:
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
-        resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
-            - '../src/Tests/'
+        resource: '../src/*'
+        exclude: '../src/{Entity,Migrations,Tests}'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
@@ -29,3 +25,10 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Command\generateOrderCommand: '@app:generate-orders'
+    
+    app:generate-orders:
+        class: App\Command\generateOrderCommand
+        autowire: false
+        arguments:
+            - 'Order Number'
