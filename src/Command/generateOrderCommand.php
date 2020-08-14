@@ -36,15 +36,20 @@ class generateOrderCommand extends Command
         // the full command description shown when running the command with
         // the "--help" option
         ->setHelp('This command interfaces with erlang to generate an order...')
-        ->addArgument('order amount', $this->requireOrderAmount ? InputArgument::REQUIRED : InputArgument::OPTIONAL, 'Order amount');
+        ->addArgument('order_total', InputArgument::REQUIRED, 'What is the Order total?');
 
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // ... put here the code to run in your command
-        
+        $amount = $input->getArgument('order_total');
 
+        if($amount > 100){
+            $output->writeln('send voucher');
+        } else {
+            $output->writeln('no voucher');
+        }
         // this method must return an integer number with the "exit status code"
         // of the command. You can also use these constants to make code more readable
 
