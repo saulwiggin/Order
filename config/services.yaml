@@ -32,3 +32,10 @@ services:
         autowire: false
         arguments:
             - 'Order Number'
+
+    # implement ys_tools port library to interface between symfony application 
+    # and erlang.
+
+
+    # parameters for the local Redis server to act as a master database for the individual symfony databases
+    

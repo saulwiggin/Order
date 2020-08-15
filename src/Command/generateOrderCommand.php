@@ -61,4 +61,5 @@ class generateOrderCommand extends Command
         // (it's equivalent to returning int(1))
         // return Command::FAILURE;
     }
+
 }
