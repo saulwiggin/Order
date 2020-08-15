@@ -39,3 +39,8 @@ services:
 
     # parameters for the local Redis server to act as a master database for the individual symfony databases
     
+    # rabbitMQ services
+    myrabbitmq:
+        # supported versions: 3.5, 3.6, 3.7
+        type: rabbitmq:3.7
+        disk: 1500

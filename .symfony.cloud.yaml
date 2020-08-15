@@ -38,3 +38,7 @@ hooks:
         set -x -e
 
         (>&2 symfony-deploy)
+        
+dependencies:
+    ruby:
+        amqp-utils: "0.5.1"
