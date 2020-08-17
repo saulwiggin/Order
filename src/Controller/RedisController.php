@@ -1,12 +1,13 @@
-<?
+<?php
 namespace App\Controller;
  
-use AppBundle\Util\RedisHelper;
-use RedisException;
+use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+
+use App\Util\RedisHelper;
  
 /**
  * @Route("/redis", service="app.controller.redis")
@@ -15,9 +16,9 @@ class RedisController
 {
     private $redisHelper;
  
-    public function __construct(RedisHelper $redisHelper)
+    public function __construct(RedisHelper $redis_helper)
     {
-        $this->redisHelper = $redisHelper;
+        $this->redisHelper = $redis_helper;
     }
  
     /**
@@ -41,7 +42,7 @@ class RedisController
                 $this->redisHelper->set($key, $value, $ttl);
                 $result = ['key' => $key, 'value' => $value, 'ttl' => $ttl];
             }
-        } catch (RedisException $e) {
+        } catch (Exception $e) {
             $result = $e->getMessage();
         }
  
@@ -66,7 +67,7 @@ class RedisController
             if ($key) {
                 $result = ['key' => $key, 'value' => $this->redisHelper->get($key)];
             }
-        } catch (RedisException $e) {
+        } catch (Exception $e) {
             $result = $e->getMessage();
         }
  
@@ -91,7 +92,7 @@ class RedisController
             if ($key) {
                 $result = ['key' => $key, 'ttl' => $this->redisHelper->getTtl($key)];
             }
-        } catch (RedisException $e) {
+        } catch (Exception $e) {
             $result = $e->getMessage();
         }
  
@@ -116,7 +117,7 @@ class RedisController
             if ($key) {
                 $result = ['key' => $key, 'persist' => $this->redisHelper->persist($key)];
             }
-        } catch (RedisException $e) {
+        } catch (Exception $e) {
             $result = $e->getMessage();
         }
  
@@ -142,7 +143,7 @@ class RedisController
             if ($key) {
                 $result = ['key' => $key, 'expire' => $this->redisHelper->expire($key, $ttl)];
             }
-        } catch (RedisException $e) {
+        } catch (Exception $e) {
             $result = $e->getMessage();
         }
  
@@ -167,7 +168,7 @@ class RedisController
             if ($key) {
                 $result = ['key' => $key, 'expire' => $this->redisHelper->delete($key)];
             }
-        } catch (RedisException $e) {
+        } catch (Exception $e) {
             $result = $e->getMessage();
         }
  

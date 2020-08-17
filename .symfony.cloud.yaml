@@ -1,44 +1,58 @@
-name: app
+# .smyfony.cloud.yaml
+name: 'acme'
 
-type: php:7.4
-
-runtime:
-    extensions:
-        - apcu
-        - mbstring
-        - sodium
-        - ctype
-        - iconv
-        
+type: 'php:7.4'
 
 build:
-    flavor: none
+    flavor: 'none'
 
-web:
-    locations:
-        "/":
-            root: "public"
-            expires: 1h
-            passthru: "/index.php"
+size: AUTO
 
-disk: 512
+disk: 5070
 
 mounts:
-    "/var": { source: local, source_path: var }
+    '/public/assets': { source: local, source_path: assets }
+    '/public/bundles': { source: local, source_path: bundles }
+    '/public/media': { source: local, source_path: media }
+    '/public/upload': { source: local, source_path: upload }
+
+dependancies:
+    php:
+        symfony/console: '*'
+        redis: "6.0.6"
+        tokenizer: "3.1"
+        ctype: "1.18"
+        symfony/intl: "4.4.10"
+        symfony/amqp-pack: "1.0.11"
+        libsodium: "1.0.18_1"
+        sylius/sylius: "~1.7.0"
+        symfony/dotenv: "^4.4"
+        symfony/flex: "^1.2"  
+    nodejs:
+        yarn: '1.22.4'
 
 hooks:
     build: |
         set -x -e
 
         curl -s https://get.symfony.com/cloud/configurator | (>&2 bash)
-        
-        (>&2 symfony-build)
+        (>&2
+            symfony-build
+        )
+        (>&2
+            # Setup everything to use the Node installation
+            unset NPM_CONFIG_PREFIX
+            export NVM_DIR=${SYMFONY_APP_DIR}/.nvm
+            set +x && . "${NVM_DIR}/nvm.sh" use --lts && set -x
+            # Starting from here, everything is setup to use the same Node
+            yarn encore dev
+        )
 
-    deploy: |
-        set -x -e
+crons:
+    cleanup_cart:
+        spec: '0 */6 * * *'
+        cmd: croncape /usr/bin/flock -n /tmp/lock.app.cleanup_cart symfony console sylius:remove-expired-carts --verbose
+    cleanup_order:
+        spec: '0 */6 * * *'
+        cmd: croncape /usr/bin/flock -n /tmp/lock.app.cleanup_order symfony console sylius:cancel-unpaid-orders --verbose
 
-        (>&2 symfony-deploy)
-        
-dependencies:
-    ruby:
-        amqp-utils: "0.5.1"

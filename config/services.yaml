@@ -4,6 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+    redis.host: 127.0.0.1
+    redis.port: 6379
 
 services:
     # default configuration for services in *this* file
@@ -38,9 +40,13 @@ services:
 
 
     # parameters for the local Redis server to act as a master database for the individual symfony databases
-    
-    # rabbitMQ services
-    myrabbitmq:
-        # supported versions: 3.5, 3.6, 3.7
-        type: rabbitmq:3.7
-        disk: 1500
+    app.controller.redis:
+        class: App\Controller\RedisController
+        arguments:
+            - "@app.util.redis_helper"
+
+    app.util.redis_helper:
+        class: App\Util\RedisHelper
+        arguments:
+            - '%redis.host%'
+            - '%redis.port%'

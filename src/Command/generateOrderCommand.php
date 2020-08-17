@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Order;
 /**
  * Class generateOrderCommand
  *
@@ -17,12 +18,13 @@ class generateOrderCommand extends Command
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'app:generate-order';
 
-    public function __construct(bool $requireOrderAmount = true)
+    public function __construct(bool $requireOrderAmount = true, EntityManagerInterface $em)
     {
         // best practices recommend to call the parent constructor first and
         // then set your own properties. That wouldn't work in this case
         // because configure() needs the properties set in this constructor
         $this->requireOrderAmount = $requireOrderAmount;
+        $this->$em = $em;
 
         parent::__construct();
     }
@@ -45,11 +47,18 @@ class generateOrderCommand extends Command
         // ... put here the code to run in your command
         $amount = $input->getArgument('order_total');
 
-        if($amount > 100){
+        # Create a new order in Doctrine Entity Manager for incoming transaction
+        $entityManger = $this->em->doctrine()->manager();
+        $order = new Order();
+        $order->setTotal($amount);
+        $entityManger->persist($order);
+
+        # apply logic for sending the voucher 
+        if ($amount > 100){
             $output->writeln('send voucher');
         } else {
             $output->writeln('no voucher');
-        }
+        };
         // this method must return an integer number with the "exit status code"
         // of the command. You can also use these constants to make code more readable
 

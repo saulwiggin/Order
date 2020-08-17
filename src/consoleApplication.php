@@ -1,9 +1,12 @@
 <?php
 
 use Symfony\Component\Console\Application;
+use App\Command\generateOrderCommand;
 
 $application = new Application();
 
-$application->add(new GenerateOrderCommand());
+$entity;
+
+$application->add(new generateOrderCommand($entity));
 
 $application->run();
